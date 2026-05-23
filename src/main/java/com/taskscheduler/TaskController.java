@@ -18,7 +18,6 @@ public class TaskController {
     @Autowired
     private UserRepository userRepository;
 
-    // Helper to get logged in user
     private User getLoggedInUser(HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) return null;
@@ -35,20 +34,20 @@ public class TaskController {
 
     // POST add new task
     @PostMapping
-    public Object addTask(@RequestBody Map<String, String> body,
-                          HttpSession session) {
+    public Object addTask(@RequestBody Map<String, String> body, HttpSession session) {
         User user = getLoggedInUser(session);
         if (user == null) return unauthorized();
         String name = body.get("name");
         int priority = Integer.parseInt(body.get("priority"));
         String deadline = body.get("deadline");
-        return scheduler.addTask(name, priority, deadline, user);
+        int estimatedMinutes = body.get("estimatedMinutes") != null ?
+            Integer.parseInt(body.get("estimatedMinutes")) : 0;
+        return scheduler.addTask(name, priority, deadline, estimatedMinutes, user);
     }
 
     // PUT complete a task
     @PutMapping("/{id}/complete")
-    public Map<String, Object> completeTask(@PathVariable int id,
-                                             HttpSession session) {
+    public Map<String, Object> completeTask(@PathVariable int id, HttpSession session) {
         User user = getLoggedInUser(session);
         Map<String, Object> response = new HashMap<>();
         if (user == null) { response.put("success", false); return response; }
@@ -67,14 +66,15 @@ public class TaskController {
         String name = body.get("name");
         int priority = Integer.parseInt(body.get("priority"));
         String deadline = body.get("deadline");
-        response.put("success", scheduler.updateTask(id, name, priority, deadline));
+        int estimatedMinutes = body.get("estimatedMinutes") != null ?
+            Integer.parseInt(body.get("estimatedMinutes")) : 0;
+        response.put("success", scheduler.updateTask(id, name, priority, deadline, estimatedMinutes));
         return response;
     }
 
     // DELETE a task
     @DeleteMapping("/{id}")
-    public Map<String, Object> deleteTask(@PathVariable int id,
-                                           HttpSession session) {
+    public Map<String, Object> deleteTask(@PathVariable int id, HttpSession session) {
         User user = getLoggedInUser(session);
         Map<String, Object> response = new HashMap<>();
         if (user == null) { response.put("success", false); return response; }
@@ -88,6 +88,14 @@ public class TaskController {
         User user = getLoggedInUser(session);
         if (user == null) return unauthorized();
         return scheduler.getNextTask(user);
+    }
+
+    // GET smart schedule based on available time
+    @GetMapping("/smart-schedule")
+    public Object getSmartSchedule(@RequestParam int minutes, HttpSession session) {
+        User user = getLoggedInUser(session);
+        if (user == null) return unauthorized();
+        return scheduler.getTasksForAvailableTime(user, minutes);
     }
 
     private Map<String, Object> unauthorized() {

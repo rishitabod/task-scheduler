@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Scheduler - Priority Queue</title>
+    <title>TaskScheduler</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: white; min-height: 100vh; }
 
-        /* PAGES */
         .page { display: none; min-height: 100vh; }
         .page.active { display: block; }
 
-        /* =================== LANDING PAGE =================== */
+        /* =================== LANDING =================== */
         .landing { background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%); }
-
         .nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 60px; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .nav-logo { font-size: 1.4rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .nav-btns { display: flex; gap: 12px; }
@@ -24,7 +23,6 @@
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
 
         .hero { text-align: center; padding: 100px 20px 60px; }
-        .hero-badge { display: inline-block; padding: 6px 16px; background: rgba(102,126,234,0.15); border: 1px solid rgba(102,126,234,0.3); border-radius: 20px; font-size: 0.8rem; color: #a78bfa; margin-bottom: 25px; }
         .hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
         .hero h1 span { background: linear-gradient(135deg, #667eea, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { font-size: 1.1rem; opacity: 0.65; max-width: 550px; margin: 0 auto 40px; line-height: 1.7; }
@@ -38,13 +36,13 @@
         .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1000px; margin: 80px auto; padding: 0 20px; }
         .feature-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 30px; transition: transform 0.2s, border-color 0.2s; }
         .feature-card:hover { transform: translateY(-5px); border-color: rgba(102,126,234,0.4); }
-        .feature-icon { font-size: 2rem; margin-bottom: 15px; }
-        .feature-card h3 { font-size: 1.1rem; margin-bottom: 10px; color: #a78bfa; }
+        .feature-icon { margin-bottom: 15px; color: #a78bfa; }
+        .feature-icon svg { width: 28px; height: 28px; stroke-width: 1.5; }
+        .feature-card h3 { font-size: 1.1rem; margin-bottom: 10px; color: white; }
         .feature-card p { font-size: 0.85rem; opacity: 0.55; line-height: 1.6; }
-
         .landing-footer { text-align: center; padding: 30px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; opacity: 0.4; }
 
-        /* =================== AUTH PAGES =================== */
+        /* =================== AUTH =================== */
         .auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0a0a1a, #1a1a3e); }
         .auth-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; }
         .auth-card h2 { font-size: 1.6rem; margin-bottom: 6px; }
@@ -82,7 +80,7 @@
         .card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; padding: 28px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.08); }
         .card h2 { margin-bottom: 20px; color: #a78bfa; font-size: 1.1rem; }
 
-        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end; }
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
         .form-grid .form-group { margin-bottom: 0; }
         .form-grid .form-group input, .form-grid .form-group select { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; outline: none; transition: border 0.3s; }
         .form-grid .form-group select option { background: #1a1a2e; }
@@ -94,6 +92,25 @@
         .stat-card:hover { transform: translateY(-3px); }
         .stat-card .number { font-size: 2rem; font-weight: bold; }
         .stat-card .label { font-size: 0.78rem; opacity: 0.65; margin-top: 5px; }
+
+        /* SMART SCHEDULER */
+        .smart-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; padding: 28px; margin-bottom: 25px; border: 1px solid rgba(102,126,234,0.3); }
+        .smart-card h2 { margin-bottom: 8px; color: #a78bfa; font-size: 1.1rem; }
+        .smart-card .desc { font-size: 0.85rem; opacity: 0.55; margin-bottom: 20px; }
+        .smart-input-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .time-input-wrap { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 11px 16px; }
+        .time-input-wrap input { background: transparent; border: none; color: white; font-size: 1rem; width: 60px; outline: none; text-align: center; }
+        .time-input-wrap span { opacity: 0.5; font-size: 0.9rem; }
+        .btn-smart { padding: 11px 26px; background: linear-gradient(135deg, #a78bfa, #667eea); border: none; border-radius: 10px; color: white; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+        .btn-smart:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(167,139,250,0.4); }
+        .smart-results { margin-top: 20px; display: none; }
+        .smart-results-header { font-size: 0.85rem; color: #a78bfa; margin-bottom: 12px; }
+        .smart-task-item { background: rgba(102,126,234,0.08); border: 1px solid rgba(102,126,234,0.2); border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .smart-task-item .stask-name { font-weight: 600; font-size: 0.95rem; }
+        .smart-task-item .stask-meta { font-size: 0.78rem; opacity: 0.55; margin-top: 3px; }
+        .smart-task-item .stask-time { background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.3); color: #a78bfa; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; white-space: nowrap; }
+        .smart-total { margin-top: 12px; font-size: 0.85rem; color: #22c55e; }
+        .no-smart-results { text-align: center; padding: 20px; opacity: 0.4; font-size: 0.9rem; }
 
         .search-filter { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .search-box { flex: 1; min-width: 200px; padding: 11px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; outline: none; }
@@ -124,7 +141,7 @@
         .task-info { flex: 1; min-width: 0; }
         .task-name { font-size: 1rem; font-weight: 600; }
         .task-name.done { text-decoration: line-through; opacity: 0.6; }
-        .task-meta { display: flex; gap: 15px; margin-top: 5px; font-size: 0.78rem; opacity: 0.55; }
+        .task-meta { display: flex; gap: 15px; margin-top: 5px; font-size: 0.78rem; opacity: 0.55; flex-wrap: wrap; }
         .overdue-tag { color: #ef4444 !important; opacity: 1 !important; font-weight: 600; }
 
         .edit-inputs { display: flex; gap: 8px; align-items: center; flex: 1; flex-wrap: wrap; }
@@ -138,7 +155,6 @@
         .btn-del { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.5); color: #ef4444; }
 
         .empty-state { text-align: center; padding: 60px; opacity: 0.4; font-size: 1rem; }
-
         .toast { position: fixed; bottom: 30px; right: 30px; background: #1a1a2e; border: 1px solid #667eea; color: white; padding: 14px 22px; border-radius: 12px; font-size: 0.9rem; z-index: 999; animation: toastIn 0.3s ease; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -148,67 +164,62 @@
 <!-- =================== LANDING PAGE =================== -->
 <div id="landingPage" class="page active landing">
     <nav class="nav">
-        <div class="nav-logo">⚡ TaskScheduler</div>
+        <div class="nav-logo">TaskScheduler</div>
         <div class="nav-btns">
             <button class="btn-outline" onclick="showPage('loginPage')">Login</button>
             <button class="btn-primary" onclick="showPage('registerPage')">Get Started</button>
         </div>
     </nav>
-
     <div class="hero">
-        <div class="hero-badge">🎓 DSA Minor Project — Priority Queue</div>
-        <h1>Manage Tasks with<br><span>Smart Priority Queue</span></h1>
-        <p>A task scheduler built using Priority Queue data structure. Tasks are automatically sorted by priority and deadline — so you always know what to do next.</p>
+        <h1>Stop Juggling Tasks.<br><span>Start Getting Things Done.</span></h1>
+        <p>Your smart personal organizer that always knows what needs your attention first — so you can focus on doing, not deciding.</p>
         <div class="hero-btns">
-            <button class="btn-big btn-big-primary" onclick="showPage('registerPage')">🚀 Get Started Free</button>
+            <button class="btn-big btn-big-primary" onclick="showPage('registerPage')">Get Started Free</button>
             <button class="btn-big btn-big-outline" onclick="showPage('loginPage')">Login to Dashboard</button>
         </div>
     </div>
-
     <div class="features">
         <div class="feature-card">
-            <div class="feature-icon">🧠</div>
-            <h3>Priority Queue DSA</h3>
-            <p>Tasks are sorted using a Min-Heap based Priority Queue — the core DSA concept powering this app.</p>
+            <div class="feature-icon"><i data-lucide="target"></i></div>
+            <h3>Always Know What's Next</h3>
+            <p>No more wasting time figuring out what to do. Your most important task is always front and center.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <h3>Smart Scheduling</h3>
-            <p>Automatically surfaces your most urgent tasks. Never miss a deadline again with intelligent sorting.</p>
+            <div class="feature-icon"><i data-lucide="clock"></i></div>
+            <h3>Never Miss a Deadline</h3>
+            <p>Deadlines are tracked automatically. Overdue tasks get flagged instantly so nothing slips through.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">🔐</div>
-            <h3>Secure & Personal</h3>
-            <p>Each user has their own private task list. Your data is saved in MySQL and persists across sessions.</p>
+            <div class="feature-icon"><i data-lucide="lock"></i></div>
+            <h3>Your Tasks, Only Yours</h3>
+            <p>Private and secure. Your task list is personal to you — no one else can see or access it.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>Progress Tracking</h3>
-            <p>Visual progress bar and stats to track how many tasks you've completed across all priorities.</p>
+            <div class="feature-icon"><i data-lucide="bar-chart-2"></i></div>
+            <h3>See Your Progress</h3>
+            <p>Watch your productivity grow. A live progress bar shows how much you've accomplished each day.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">⚠️</div>
-            <h3>Overdue Alerts</h3>
-            <p>Tasks past their deadline are automatically flagged so you can take immediate action.</p>
+            <div class="feature-icon"><i data-lucide="timer"></i></div>
+            <h3>Smart Time Planner</h3>
+            <p>Tell us how much free time you have. We'll instantly pick the best tasks you can finish — no guessing.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">🔍</div>
-            <h3>Search & Filter</h3>
-            <p>Quickly find tasks by name or filter by priority level. Edit or delete tasks on the fly.</p>
+            <div class="feature-icon"><i data-lucide="search"></i></div>
+            <h3>Find Anything Instantly</h3>
+            <p>Search by name or filter by priority. Whether you have 5 tasks or 50, finding what you need is effortless.</p>
         </div>
     </div>
-
-    <div class="landing-footer">
-        Built with Spring Boot + MySQL + Priority Queue DSA &nbsp;·&nbsp; Minor Project 2026
-    </div>
+    <div class="landing-footer">TaskScheduler &nbsp;·&nbsp; 2026</div>
 </div>
+<script>lucide.createIcons();</script>
 
 <!-- =================== LOGIN PAGE =================== -->
 <div id="loginPage" class="page">
     <div class="auth-page">
         <div class="auth-card">
             <div class="auth-back" onclick="showPage('landingPage')">← Back to Home</div>
-            <h2>Welcome Back 👋</h2>
+            <h2>Welcome Back</h2>
             <p class="subtitle">Login to your task dashboard</p>
             <div class="error-msg" id="loginError"></div>
             <div class="form-group">
@@ -220,9 +231,7 @@
                 <input type="password" id="loginPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
             </div>
             <button class="auth-btn" onclick="login()">Login →</button>
-            <div class="auth-switch">
-                Don't have an account? <a onclick="showPage('registerPage')">Register here</a>
-            </div>
+            <div class="auth-switch">Don't have an account? <a onclick="showPage('registerPage')">Register here</a></div>
         </div>
     </div>
 </div>
@@ -232,7 +241,7 @@
     <div class="auth-page">
         <div class="auth-card">
             <div class="auth-back" onclick="showPage('landingPage')">← Back to Home</div>
-            <h2>Create Account ✨</h2>
+            <h2>Create Account</h2>
             <p class="subtitle">Start managing your tasks today</p>
             <div class="error-msg" id="registerError"></div>
             <div class="success-msg" id="registerSuccess"></div>
@@ -249,9 +258,7 @@
                 <input type="password" id="regPassword" placeholder="Create a password" onkeydown="if(event.key==='Enter') register()">
             </div>
             <button class="auth-btn" onclick="register()">Create Account →</button>
-            <div class="auth-switch">
-                Already have an account? <a onclick="showPage('loginPage')">Login here</a>
-            </div>
+            <div class="auth-switch">Already have an account? <a onclick="showPage('loginPage')">Login here</a></div>
         </div>
     </div>
 </div>
@@ -260,11 +267,11 @@
 <div id="dashboardPage" class="page">
     <header>
         <div class="header-left">
-            <h1>⚡ Task Scheduler</h1>
-            <p>Priority Queue Based Task Management</p>
+            <h1>TaskScheduler</h1>
+            <p>Your smart task organizer</p>
         </div>
         <div class="header-right">
-            <div class="user-badge">👤 <span id="headerUsername"></span></div>
+            <div class="user-badge"><span id="headerUsername"></span></div>
             <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
     </header>
@@ -283,7 +290,7 @@
 
         <!-- Add Task -->
         <div class="card">
-            <h2>➕ Add New Task</h2>
+            <h2>Add New Task</h2>
             <div class="form-grid">
                 <div class="form-group">
                     <label>TASK NAME</label>
@@ -292,14 +299,18 @@
                 <div class="form-group">
                     <label>PRIORITY</label>
                     <select id="taskPriority">
-                        <option value="1">🔴 High</option>
-                        <option value="2">🟡 Medium</option>
-                        <option value="3">🟢 Low</option>
+                        <option value="1">High</option>
+                        <option value="2">Medium</option>
+                        <option value="3">Low</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>DEADLINE</label>
                     <input type="date" id="taskDeadline">
+                </div>
+                <div class="form-group">
+                    <label>EST. TIME (mins)</label>
+                    <input type="number" id="taskEstimatedMinutes" placeholder="e.g. 30" min="1">
                 </div>
                 <button class="btn-add" onclick="addTask()">Add Task</button>
             </div>
@@ -313,41 +324,60 @@
             </div>
             <div class="stat-card">
                 <div class="number" id="highCount" style="color:#ef4444">0</div>
-                <div class="label">🔴 High Priority</div>
+                <div class="label">High Priority</div>
             </div>
             <div class="stat-card">
                 <div class="number" id="medCount" style="color:#eab308">0</div>
-                <div class="label">🟡 Medium Priority</div>
+                <div class="label">Medium Priority</div>
             </div>
             <div class="stat-card">
                 <div class="number" id="completedCount" style="color:#22c55e">0</div>
-                <div class="label">✅ Completed</div>
+                <div class="label">Completed</div>
             </div>
         </div>
 
-        <!-- Next Task -->
+        <!-- Next Task Banner -->
         <div class="next-task-banner" id="nextTaskBanner" style="display:none">
-            <span style="font-size:1.6rem">🎯</span>
             <div>
-                <div class="nlabel">NEXT TASK TO DO</div>
+                <div class="nlabel">UP NEXT</div>
                 <div class="ntask" id="nextTaskName"></div>
+            </div>
+        </div>
+
+        <!-- Smart Scheduler -->
+        <div class="smart-card">
+            <h2>Smart Time Planner</h2>
+            <p class="desc">Tell us how much free time you have — we'll pick the best tasks you can finish right now.</p>
+            <div class="smart-input-row">
+                <div class="time-input-wrap">
+                    <input type="number" id="availableHours" placeholder="0" min="0" max="23" value="0">
+                    <span>hrs</span>
+                    <input type="number" id="availableMinutesInput" placeholder="0" min="0" max="59" value="30">
+                    <span>mins</span>
+                </div>
+                <button class="btn-smart" onclick="getSmartSchedule()">Show My Tasks</button>
+            </div>
+            <div class="smart-results" id="smartResults">
+                <div class="smart-results-header" id="smartResultsHeader"></div>
+                <div id="smartTaskList"></div>
+                <div class="smart-total" id="smartTotal"></div>
             </div>
         </div>
 
         <!-- Search & Filter -->
         <div class="search-filter">
-            <input class="search-box" type="text" id="searchInput" placeholder="🔍 Search tasks..." oninput="renderFiltered()">
+            <input class="search-box" type="text" id="searchInput" placeholder="Search tasks..." oninput="renderFiltered()">
             <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
-            <button class="filter-btn" onclick="setFilter('1', this)">🔴 High</button>
-            <button class="filter-btn" onclick="setFilter('2', this)">🟡 Medium</button>
-            <button class="filter-btn" onclick="setFilter('3', this)">🟢 Low</button>
-            <button class="filter-btn" onclick="setFilter('done', this)">✅ Done</button>
-            <button class="filter-btn" onclick="setFilter('overdue', this)">⚠️ Overdue</button>
+            <button class="filter-btn" onclick="setFilter('1', this)">High</button>
+            <button class="filter-btn" onclick="setFilter('2', this)">Medium</button>
+            <button class="filter-btn" onclick="setFilter('3', this)">Low</button>
+            <button class="filter-btn" onclick="setFilter('done', this)">Done</button>
+            <button class="filter-btn" onclick="setFilter('overdue', this)">Overdue</button>
         </div>
 
         <!-- Task List -->
         <div class="section-header">
-            <h2>📋 Tasks (Sorted by Priority)</h2>
+            <h2>Tasks</h2>
             <span class="task-count" id="taskCount"></span>
         </div>
         <div id="taskList"></div>
@@ -360,32 +390,23 @@
     let allTasks = [];
     let currentFilter = 'all';
 
-    // ========== PAGE NAVIGATION ==========
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
     }
 
-    // ========== AUTH ==========
     async function register() {
         const username = document.getElementById('regUsername').value.trim();
         const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value;
         const errEl = document.getElementById('registerError');
         const sucEl = document.getElementById('registerSuccess');
-        errEl.style.display = 'none';
-        sucEl.style.display = 'none';
+        errEl.style.display = 'none'; sucEl.style.display = 'none';
         if (!username || !email || !password) { errEl.textContent = 'Please fill all fields!'; errEl.style.display = 'block'; return; }
         const res = await fetch(`${AUTH}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }), credentials: 'include' });
         const data = await res.json();
-        if (data.success) {
-            sucEl.textContent = '✅ Registered successfully! Redirecting to login...';
-            sucEl.style.display = 'block';
-            setTimeout(() => showPage('loginPage'), 1500);
-        } else {
-            errEl.textContent = data.message;
-            errEl.style.display = 'block';
-        }
+        if (data.success) { sucEl.textContent = 'Registered! Redirecting...'; sucEl.style.display = 'block'; setTimeout(() => showPage('loginPage'), 1500); }
+        else { errEl.textContent = data.message; errEl.style.display = 'block'; }
     }
 
     async function login() {
@@ -396,66 +417,54 @@
         if (!username || !password) { errEl.textContent = 'Please fill all fields!'; errEl.style.display = 'block'; return; }
         const res = await fetch(`${AUTH}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }), credentials: 'include' });
         const data = await res.json();
-        if (data.success) {
-            document.getElementById('headerUsername').textContent = data.username;
-            showPage('dashboardPage');
-            loadTasks();
-            showToast('👋 Welcome back, ' + data.username + '!');
-        } else {
-            errEl.textContent = data.message;
-            errEl.style.display = 'block';
-        }
+        if (data.success) { document.getElementById('headerUsername').textContent = data.username; showPage('dashboardPage'); loadTasks(); showToast('Welcome back, ' + data.username + '!'); }
+        else { errEl.textContent = data.message; errEl.style.display = 'block'; }
     }
 
     async function logout() {
         await fetch(`${AUTH}/logout`, { method: 'POST', credentials: 'include' });
         showPage('landingPage');
-        showToast('👋 Logged out successfully!');
+        showToast('Logged out successfully!');
     }
 
-    // ========== TASKS ==========
     async function loadTasks() {
         const res = await fetch(API, { credentials: 'include' });
         allTasks = await res.json();
         if (!Array.isArray(allTasks)) allTasks = [];
-        renderFiltered();
-        updateStats(allTasks);
-        loadNextTask();
-        updateProgress(allTasks);
+        renderFiltered(); updateStats(allTasks); loadNextTask(); updateProgress(allTasks);
     }
 
     async function addTask() {
         const name = document.getElementById('taskName').value.trim();
         const priority = document.getElementById('taskPriority').value;
         const deadline = document.getElementById('taskDeadline').value;
-        if (!name || !deadline) { showToast('⚠️ Please fill task name and deadline!'); return; }
-        await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, priority, deadline }), credentials: 'include' });
+        const estimatedMinutes = document.getElementById('taskEstimatedMinutes').value || '0';
+        if (!name || !deadline) { showToast('Please fill task name and deadline!'); return; }
+        await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, priority, deadline, estimatedMinutes }), credentials: 'include' });
         document.getElementById('taskName').value = '';
         document.getElementById('taskDeadline').value = '';
-        showToast('✅ Task added!');
-        loadTasks();
+        document.getElementById('taskEstimatedMinutes').value = '';
+        showToast('Task added!'); loadTasks();
     }
 
     async function completeTask(id) {
         await fetch(`${API}/${id}/complete`, { method: 'PUT', credentials: 'include' });
-        showToast('🎉 Task completed!');
-        loadTasks();
+        showToast('Task completed!'); loadTasks();
     }
 
     async function deleteTask(id) {
         await fetch(`${API}/${id}`, { method: 'DELETE', credentials: 'include' });
-        showToast('🗑️ Task deleted!');
-        loadTasks();
+        showToast('Task deleted!'); loadTasks();
     }
 
     async function saveEdit(id) {
         const name = document.getElementById(`edit-name-${id}`).value.trim();
         const priority = document.getElementById(`edit-priority-${id}`).value;
         const deadline = document.getElementById(`edit-deadline-${id}`).value;
-        if (!name || !deadline) { showToast('⚠️ Fill all fields!'); return; }
-        await fetch(`${API}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, priority, deadline }), credentials: 'include' });
-        showToast('✏️ Task updated!');
-        loadTasks();
+        const estimatedMinutes = document.getElementById(`edit-est-${id}`).value || '0';
+        if (!name || !deadline) { showToast('Fill all fields!'); return; }
+        await fetch(`${API}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, priority, deadline, estimatedMinutes }), credentials: 'include' });
+        showToast('Task updated!'); loadTasks();
     }
 
     async function loadNextTask() {
@@ -463,17 +472,50 @@
         const task = await res.json();
         if (task && task.name) {
             document.getElementById('nextTaskBanner').style.display = 'flex';
-            document.getElementById('nextTaskName').textContent = `${task.name} — ${getPriorityLabel(task.priority)} · Due: ${task.deadline}`;
-        } else {
-            document.getElementById('nextTaskBanner').style.display = 'none';
+            document.getElementById('nextTaskName').textContent = `${task.name} · ${getPriorityLabel(task.priority)} · Due: ${task.deadline}`;
+        } else { document.getElementById('nextTaskBanner').style.display = 'none'; }
+    }
+
+    async function getSmartSchedule() {
+        const hours = parseInt(document.getElementById('availableHours').value) || 0;
+        const mins = parseInt(document.getElementById('availableMinutesInput').value) || 0;
+        const totalMinutes = (hours * 60) + mins;
+        if (totalMinutes <= 0) { showToast('Please enter some available time!'); return; }
+
+        const res = await fetch(`${API}/smart-schedule?minutes=${totalMinutes}`, { credentials: 'include' });
+        const tasks = await res.json();
+
+        const resultsDiv = document.getElementById('smartResults');
+        const headerDiv = document.getElementById('smartResultsHeader');
+        const listDiv = document.getElementById('smartTaskList');
+        const totalDiv = document.getElementById('smartTotal');
+        resultsDiv.style.display = 'block';
+
+        if (!Array.isArray(tasks) || tasks.length === 0) {
+            headerDiv.textContent = '';
+            listDiv.innerHTML = '<div class="no-smart-results">No tasks found for this time slot. Try adding tasks with estimated time!</div>';
+            totalDiv.textContent = '';
+            return;
         }
+
+        const totalTime = tasks.reduce((sum, t) => sum + t.estimatedMinutes, 0);
+        headerDiv.textContent = `Here's what you can get done in ${hours > 0 ? hours + 'h ' : ''}${mins > 0 ? mins + 'min' : ''}:`;
+        listDiv.innerHTML = tasks.map(task => `
+            <div class="smart-task-item">
+                <div>
+                    <div class="stask-name">${task.name}</div>
+                    <div class="stask-meta">${getPriorityLabel(task.priority)} · Due: ${task.deadline}</div>
+                </div>
+                <span class="stask-time">${task.estimatedMinutes} min</span>
+            </div>
+        `).join('');
+        totalDiv.textContent = `Total: ${totalTime} min — You'll finish ${tasks.length} task${tasks.length > 1 ? 's' : ''}!`;
     }
 
     function setFilter(f, btn) {
         currentFilter = f;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderFiltered();
+        btn.classList.add('active'); renderFiltered();
     }
 
     function renderFiltered() {
@@ -481,11 +523,7 @@
         const today = new Date().toISOString().split('T')[0];
         let filtered = allTasks.filter(t => {
             const matchSearch = t.name.toLowerCase().includes(search);
-            const matchFilter =
-                currentFilter === 'all' ? true :
-                currentFilter === 'done' ? t.completed :
-                currentFilter === 'overdue' ? (!t.completed && t.deadline < today) :
-                String(t.priority) === currentFilter;
+            const matchFilter = currentFilter === 'all' ? true : currentFilter === 'done' ? t.completed : currentFilter === 'overdue' ? (!t.completed && t.deadline < today) : String(t.priority) === currentFilter;
             return matchSearch && matchFilter;
         });
         renderTasks(filtered);
@@ -495,7 +533,7 @@
     function renderTasks(tasks) {
         const list = document.getElementById('taskList');
         const today = new Date().toISOString().split('T')[0];
-        if (tasks.length === 0) { list.innerHTML = '<div class="empty-state">No tasks found 🔍</div>'; return; }
+        if (tasks.length === 0) { list.innerHTML = '<div class="empty-state">No tasks found</div>'; return; }
         list.innerHTML = tasks.map(task => {
             const overdue = !task.completed && task.deadline < today;
             return `
@@ -504,34 +542,36 @@
                 <div class="task-info" id="view-${task.id}">
                     <div class="task-name ${task.completed ? 'done' : ''}">${task.name}</div>
                     <div class="task-meta">
-                        <span>📅 ${task.deadline}</span>
-                        ${overdue ? '<span class="overdue-tag">⚠️ OVERDUE</span>' : ''}
-                        ${task.completed ? '<span style="color:#22c55e">✅ Done</span>' : ''}
+                        <span>Due: ${task.deadline}</span>
+                        ${task.estimatedMinutes > 0 ? `<span>${task.estimatedMinutes} min</span>` : ''}
+                        ${overdue ? '<span class="overdue-tag">Overdue</span>' : ''}
+                        ${task.completed ? '<span style="color:#22c55e">Completed</span>' : ''}
                     </div>
                 </div>
                 <div class="task-actions" id="actions-${task.id}">
-                    ${!task.completed ? `<button class="btn btn-done" onclick="completeTask(${task.id})">✅ Done</button>` : ''}
-                    ${!task.completed ? `<button class="btn btn-edit" onclick="showEdit(${task.id}, '${task.name}', ${task.priority}, '${task.deadline}')">✏️ Edit</button>` : ''}
-                    <button class="btn btn-del" onclick="deleteTask(${task.id})">🗑️</button>
+                    ${!task.completed ? `<button class="btn btn-done" onclick="completeTask(${task.id})">Done</button>` : ''}
+                    ${!task.completed ? `<button class="btn btn-edit" onclick="showEdit(${task.id}, '${task.name}', ${task.priority}, '${task.deadline}', ${task.estimatedMinutes})">Edit</button>` : ''}
+                    <button class="btn btn-del" onclick="deleteTask(${task.id})">Delete</button>
                 </div>
             </div>`;
         }).join('');
     }
 
-    function showEdit(id, name, priority, deadline) {
+    function showEdit(id, name, priority, deadline, estimatedMinutes) {
         document.getElementById(`view-${id}`).innerHTML = `
             <div class="edit-inputs">
                 <input id="edit-name-${id}" value="${name}" placeholder="Task name">
                 <select id="edit-priority-${id}">
-                    <option value="1" ${priority==1?'selected':''}>🔴 High</option>
-                    <option value="2" ${priority==2?'selected':''}>🟡 Medium</option>
-                    <option value="3" ${priority==3?'selected':''}>🟢 Low</option>
+                    <option value="1" ${priority==1?'selected':''}>High</option>
+                    <option value="2" ${priority==2?'selected':''}>Medium</option>
+                    <option value="3" ${priority==3?'selected':''}>Low</option>
                 </select>
                 <input type="date" id="edit-deadline-${id}" value="${deadline}">
+                <input type="number" id="edit-est-${id}" value="${estimatedMinutes}" placeholder="mins" style="width:70px">
             </div>`;
         document.getElementById(`actions-${id}`).innerHTML = `
-            <button class="btn btn-save" onclick="saveEdit(${id})">💾 Save</button>
-            <button class="btn btn-del" onclick="loadTasks()">✕</button>`;
+            <button class="btn btn-save" onclick="saveEdit(${id})">Save</button>
+            <button class="btn btn-del" onclick="loadTasks()">Cancel</button>`;
     }
 
     function updateStats(tasks) {
@@ -549,7 +589,7 @@
         document.getElementById('progressText').textContent = `${pct}% Completed (${done}/${total})`;
     }
 
-    function getPriorityLabel(p) { return p == 1 ? '🔴 High' : p == 2 ? '🟡 Medium' : '🟢 Low'; }
+    function getPriorityLabel(p) { return p == 1 ? 'High' : p == 2 ? 'Medium' : 'Low'; }
 
     function showToast(msg) {
         const t = document.createElement('div');
@@ -558,15 +598,10 @@
         setTimeout(() => t.remove(), 3000);
     }
 
-    // Check session on load
     (async () => {
         const res = await fetch(`${AUTH}/session`, { credentials: 'include' });
         const data = await res.json();
-        if (data.loggedIn) {
-            document.getElementById('headerUsername').textContent = data.username;
-            showPage('dashboardPage');
-            loadTasks();
-        }
+        if (data.loggedIn) { document.getElementById('headerUsername').textContent = data.username; showPage('dashboardPage'); loadTasks(); }
     })();
 </script>
 </body>
