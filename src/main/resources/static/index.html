@@ -6,212 +6,532 @@
     <title>Task Scheduler - Priority Queue</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0f0c29; color: white; min-height: 100vh; }
-        
-        header { background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        header h1 { font-size: 1.8rem; letter-spacing: 1px; }
-        header p { font-size: 0.9rem; opacity: 0.8; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: white; min-height: 100vh; }
 
-        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        /* PAGES */
+        .page { display: none; min-height: 100vh; }
+        .page.active { display: block; }
 
-        .add-task-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1); }
-        .add-task-card h2 { margin-bottom: 20px; color: #a78bfa; }
+        /* =================== LANDING PAGE =================== */
+        .landing { background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%); }
 
-        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #a78bfa; }
-        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: white; font-size: 0.95rem; outline: none; transition: border 0.3s; }
-        .form-group input:focus, .form-group select:focus { border-color: #667eea; }
-        .form-group select option { background: #1a1a2e; }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 60px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .nav-logo { font-size: 1.4rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-btns { display: flex; gap: 12px; }
+        .btn-outline { padding: 9px 22px; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; background: transparent; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-outline:hover { border-color: #667eea; color: #a78bfa; }
+        .btn-primary { padding: 9px 22px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
 
-        .btn-add { padding: 12px 28px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; font-size: 1rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap; }
-        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+        .hero { text-align: center; padding: 100px 20px 60px; }
+        .hero-badge { display: inline-block; padding: 6px 16px; background: rgba(102,126,234,0.15); border: 1px solid rgba(102,126,234,0.3); border-radius: 20px; font-size: 0.8rem; color: #a78bfa; margin-bottom: 25px; }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
+        .hero h1 span { background: linear-gradient(135deg, #667eea, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.1rem; opacity: 0.65; max-width: 550px; margin: 0 auto 40px; line-height: 1.7; }
+        .hero-btns { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn-big { padding: 14px 35px; border-radius: 10px; font-size: 1rem; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-big-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-big-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(102,126,234,0.4); }
+        .btn-big-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; }
+        .btn-big-outline:hover { border-color: #667eea; }
 
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .stat-card .number { font-size: 2rem; font-weight: bold; color: #a78bfa; }
-        .stat-card .label { font-size: 0.8rem; opacity: 0.7; margin-top: 5px; }
+        .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1000px; margin: 80px auto; padding: 0 20px; }
+        .feature-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 30px; transition: transform 0.2s, border-color 0.2s; }
+        .feature-card:hover { transform: translateY(-5px); border-color: rgba(102,126,234,0.4); }
+        .feature-icon { font-size: 2rem; margin-bottom: 15px; }
+        .feature-card h3 { font-size: 1.1rem; margin-bottom: 10px; color: #a78bfa; }
+        .feature-card p { font-size: 0.85rem; opacity: 0.55; line-height: 1.6; }
 
-        .tasks-section h2 { margin-bottom: 20px; color: #a78bfa; }
-        .task-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; transition: transform 0.2s; }
-        .task-card:hover { transform: translateX(5px); }
-        .task-card.completed { opacity: 0.5; }
+        .landing-footer { text-align: center; padding: 30px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; opacity: 0.4; }
 
-        .priority-badge { padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-right: 15px; }
-        .priority-1 { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
-        .priority-2 { background: rgba(234,179,8,0.2); color: #eab308; border: 1px solid #eab308; }
-        .priority-3 { background: rgba(34,197,94,0.2); color: #22c55e; border: 1px solid #22c55e; }
+        /* =================== AUTH PAGES =================== */
+        .auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0a0a1a, #1a1a3e); }
+        .auth-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; }
+        .auth-card h2 { font-size: 1.6rem; margin-bottom: 6px; }
+        .auth-card .subtitle { font-size: 0.85rem; opacity: 0.5; margin-bottom: 30px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.8rem; color: #a78bfa; margin-bottom: 7px; letter-spacing: 0.5px; }
+        .form-group input { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; font-size: 0.95rem; outline: none; transition: border 0.3s; }
+        .form-group input:focus { border-color: #667eea; }
+        .auth-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; font-size: 1rem; cursor: pointer; margin-top: 5px; transition: all 0.2s; }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
+        .auth-switch { text-align: center; margin-top: 20px; font-size: 0.85rem; opacity: 0.6; }
+        .auth-switch a { color: #a78bfa; cursor: pointer; text-decoration: none; }
+        .auth-switch a:hover { text-decoration: underline; }
+        .auth-back { display: inline-block; margin-bottom: 20px; color: #a78bfa; cursor: pointer; font-size: 0.85rem; opacity: 0.7; }
+        .auth-back:hover { opacity: 1; }
+        .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; color: #ef4444; margin-bottom: 15px; display: none; }
+        .success-msg { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; color: #22c55e; margin-bottom: 15px; display: none; }
 
-        .task-info { flex: 1; }
-        .task-name { font-size: 1.05rem; font-weight: 600; }
-        .task-name.completed-text { text-decoration: line-through; }
-        .task-deadline { font-size: 0.8rem; opacity: 0.6; margin-top: 4px; }
+        /* =================== DASHBOARD =================== */
+        header { background: linear-gradient(135deg, #667eea, #764ba2); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 30px rgba(102,126,234,0.3); position: sticky; top: 0; z-index: 100; }
+        .header-left h1 { font-size: 1.4rem; }
+        .header-left p { font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-badge { background: rgba(255,255,255,0.15); padding: 7px 16px; border-radius: 20px; font-size: 0.85rem; }
+        .btn-logout { padding: 7px 16px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-logout:hover { background: rgba(239,68,68,0.3); border-color: #ef4444; }
 
-        .task-actions { display: flex; gap: 10px; }
-        .btn-complete { padding: 8px 16px; background: rgba(34,197,94,0.15); border: 1px solid #22c55e; border-radius: 8px; color: #22c55e; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
-        .btn-complete:hover { background: rgba(34,197,94,0.3); }
-        .btn-delete { padding: 8px 16px; background: rgba(239,68,68,0.15); border: 1px solid #ef4444; border-radius: 8px; color: #ef4444; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
-        .btn-delete:hover { background: rgba(239,68,68,0.3); }
+        .container { max-width: 1100px; margin: 35px auto; padding: 0 20px; }
 
-        .empty-state { text-align: center; padding: 60px; opacity: 0.5; }
-        .empty-state p { font-size: 1.1rem; }
+        .progress-section { margin-bottom: 25px; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: #a78bfa; }
+        .progress-bar-bg { background: rgba(255,255,255,0.08); border-radius: 50px; height: 10px; }
+        .progress-bar-fill { height: 10px; border-radius: 50px; background: linear-gradient(90deg, #667eea, #22c55e); transition: width 0.5s ease; }
 
-        .next-task-banner { background: linear-gradient(135deg, #667eea33, #764ba233); border: 1px solid #667eea; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
-        .next-task-banner .label { font-size: 0.8rem; color: #a78bfa; }
-        .next-task-banner .task-name { font-weight: bold; font-size: 1rem; }
+        .card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; padding: 28px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.08); }
+        .card h2 { margin-bottom: 20px; color: #a78bfa; font-size: 1.1rem; }
+
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end; }
+        .form-grid .form-group { margin-bottom: 0; }
+        .form-grid .form-group input, .form-grid .form-group select { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; outline: none; transition: border 0.3s; }
+        .form-grid .form-group select option { background: #1a1a2e; }
+        .btn-add { padding: 11px 26px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
+
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 14px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.08); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card .number { font-size: 2rem; font-weight: bold; }
+        .stat-card .label { font-size: 0.78rem; opacity: 0.65; margin-top: 5px; }
+
+        .search-filter { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 200px; padding: 11px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: white; font-size: 0.9rem; outline: none; }
+        .search-box::placeholder { color: rgba(255,255,255,0.3); }
+        .filter-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: white; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+        .filter-btn.active { background: rgba(102,126,234,0.3); border-color: #667eea; color: #a78bfa; }
+
+        .next-task-banner { background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15)); border: 1px solid rgba(102,126,234,0.4); border-radius: 12px; padding: 16px 22px; margin-bottom: 22px; display: flex; align-items: center; gap: 15px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { border-color: rgba(102,126,234,0.4); } 50% { border-color: rgba(102,126,234,0.9); } }
+        .next-task-banner .nlabel { font-size: 0.75rem; color: #a78bfa; letter-spacing: 1px; }
+        .next-task-banner .ntask { font-weight: bold; font-size: 1rem; margin-top: 3px; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .section-header h2 { color: #a78bfa; font-size: 1.1rem; }
+        .task-count { font-size: 0.8rem; opacity: 0.5; }
+
+        .task-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 18px 22px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 15px; transition: transform 0.2s, box-shadow 0.2s; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .task-card:hover { transform: translateX(6px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .task-card.completed { opacity: 0.45; }
+        .task-card.overdue { border-color: rgba(239,68,68,0.4); }
+
+        .priority-badge { padding: 5px 13px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+        .priority-1 { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.4); }
+        .priority-2 { background: rgba(234,179,8,0.15); color: #eab308; border: 1px solid rgba(234,179,8,0.4); }
+        .priority-3 { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.4); }
+
+        .task-info { flex: 1; min-width: 0; }
+        .task-name { font-size: 1rem; font-weight: 600; }
+        .task-name.done { text-decoration: line-through; opacity: 0.6; }
+        .task-meta { display: flex; gap: 15px; margin-top: 5px; font-size: 0.78rem; opacity: 0.55; }
+        .overdue-tag { color: #ef4444 !important; opacity: 1 !important; font-weight: 600; }
+
+        .edit-inputs { display: flex; gap: 8px; align-items: center; flex: 1; flex-wrap: wrap; }
+        .edit-inputs input, .edit-inputs select { padding: 7px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: white; font-size: 0.85rem; outline: none; }
+
+        .task-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn { padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; border: 1px solid; transition: all 0.2s; }
+        .btn-done { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.5); color: #22c55e; }
+        .btn-edit { background: rgba(102,126,234,0.12); border-color: rgba(102,126,234,0.5); color: #818cf8; }
+        .btn-save { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.5); color: #22c55e; }
+        .btn-del { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.5); color: #ef4444; }
+
+        .empty-state { text-align: center; padding: 60px; opacity: 0.4; font-size: 1rem; }
+
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1a1a2e; border: 1px solid #667eea; color: white; padding: 14px 22px; border-radius: 12px; font-size: 0.9rem; z-index: 999; animation: toastIn 0.3s ease; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<header>
-    <div>
-        <h1>⚡ Task Scheduler</h1>
-        <p>Priority Queue Based Task Management System</p>
-    </div>
-    <div style="text-align:right; font-size:0.8rem; opacity:0.7;">
-        DSA Minor Project<br>Priority Queue | Spring Boot
-    </div>
-</header>
+<!-- =================== LANDING PAGE =================== -->
+<div id="landingPage" class="page active landing">
+    <nav class="nav">
+        <div class="nav-logo">⚡ TaskScheduler</div>
+        <div class="nav-btns">
+            <button class="btn-outline" onclick="showPage('loginPage')">Login</button>
+            <button class="btn-primary" onclick="showPage('registerPage')">Get Started</button>
+        </div>
+    </nav>
 
-<div class="container">
+    <div class="hero">
+        <div class="hero-badge">🎓 DSA Minor Project — Priority Queue</div>
+        <h1>Manage Tasks with<br><span>Smart Priority Queue</span></h1>
+        <p>A task scheduler built using Priority Queue data structure. Tasks are automatically sorted by priority and deadline — so you always know what to do next.</p>
+        <div class="hero-btns">
+            <button class="btn-big btn-big-primary" onclick="showPage('registerPage')">🚀 Get Started Free</button>
+            <button class="btn-big btn-big-outline" onclick="showPage('loginPage')">Login to Dashboard</button>
+        </div>
+    </div>
 
-    <!-- Add Task Form -->
-    <div class="add-task-card">
-        <h2>➕ Add New Task</h2>
-        <div class="form-grid">
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Priority Queue DSA</h3>
+            <p>Tasks are sorted using a Min-Heap based Priority Queue — the core DSA concept powering this app.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Smart Scheduling</h3>
+            <p>Automatically surfaces your most urgent tasks. Never miss a deadline again with intelligent sorting.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Secure & Personal</h3>
+            <p>Each user has their own private task list. Your data is saved in MySQL and persists across sessions.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Progress Tracking</h3>
+            <p>Visual progress bar and stats to track how many tasks you've completed across all priorities.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚠️</div>
+            <h3>Overdue Alerts</h3>
+            <p>Tasks past their deadline are automatically flagged so you can take immediate action.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Search & Filter</h3>
+            <p>Quickly find tasks by name or filter by priority level. Edit or delete tasks on the fly.</p>
+        </div>
+    </div>
+
+    <div class="landing-footer">
+        Built with Spring Boot + MySQL + Priority Queue DSA &nbsp;·&nbsp; Minor Project 2026
+    </div>
+</div>
+
+<!-- =================== LOGIN PAGE =================== -->
+<div id="loginPage" class="page">
+    <div class="auth-page">
+        <div class="auth-card">
+            <div class="auth-back" onclick="showPage('landingPage')">← Back to Home</div>
+            <h2>Welcome Back 👋</h2>
+            <p class="subtitle">Login to your task dashboard</p>
+            <div class="error-msg" id="loginError"></div>
             <div class="form-group">
-                <label>Task Name</label>
-                <input type="text" id="taskName" placeholder="Enter task name...">
+                <label>USERNAME</label>
+                <input type="text" id="loginUsername" placeholder="Enter username">
             </div>
             <div class="form-group">
-                <label>Priority</label>
-                <select id="taskPriority">
-                    <option value="1">🔴 High</option>
-                    <option value="2">🟡 Medium</option>
-                    <option value="3">🟢 Low</option>
-                </select>
+                <label>PASSWORD</label>
+                <input type="password" id="loginPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
+            </div>
+            <button class="auth-btn" onclick="login()">Login →</button>
+            <div class="auth-switch">
+                Don't have an account? <a onclick="showPage('registerPage')">Register here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =================== REGISTER PAGE =================== -->
+<div id="registerPage" class="page">
+    <div class="auth-page">
+        <div class="auth-card">
+            <div class="auth-back" onclick="showPage('landingPage')">← Back to Home</div>
+            <h2>Create Account ✨</h2>
+            <p class="subtitle">Start managing your tasks today</p>
+            <div class="error-msg" id="registerError"></div>
+            <div class="success-msg" id="registerSuccess"></div>
+            <div class="form-group">
+                <label>USERNAME</label>
+                <input type="text" id="regUsername" placeholder="Choose a username">
             </div>
             <div class="form-group">
-                <label>Deadline</label>
-                <input type="date" id="taskDeadline">
+                <label>EMAIL</label>
+                <input type="email" id="regEmail" placeholder="Enter your email">
             </div>
-            <button class="btn-add" onclick="addTask()">Add Task</button>
-        </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats">
-        <div class="stat-card">
-            <div class="number" id="totalCount">0</div>
-            <div class="label">Total Tasks</div>
-        </div>
-        <div class="stat-card">
-            <div class="number" style="color:#ef4444" id="highCount">0</div>
-            <div class="label">🔴 High Priority</div>
-        </div>
-        <div class="stat-card">
-            <div class="number" style="color:#eab308" id="medCount">0</div>
-            <div class="label">🟡 Medium Priority</div>
-        </div>
-        <div class="stat-card">
-            <div class="number" style="color:#22c55e" id="completedCount">0</div>
-            <div class="label">✅ Completed</div>
-        </div>
-    </div>
-
-    <!-- Next Task Banner -->
-    <div class="next-task-banner" id="nextTaskBanner" style="display:none">
-        <span style="font-size:1.5rem">🎯</span>
-        <div>
-            <div class="label">NEXT TASK TO DO</div>
-            <div class="task-name" id="nextTaskName"></div>
-        </div>
-    </div>
-
-    <!-- Task List -->
-    <div class="tasks-section">
-        <h2>📋 Tasks (Sorted by Priority)</h2>
-        <div id="taskList">
-            <div class="empty-state">
-                <p>No tasks yet. Add your first task above! 🚀</p>
+            <div class="form-group">
+                <label>PASSWORD</label>
+                <input type="password" id="regPassword" placeholder="Create a password" onkeydown="if(event.key==='Enter') register()">
+            </div>
+            <button class="auth-btn" onclick="register()">Create Account →</button>
+            <div class="auth-switch">
+                Already have an account? <a onclick="showPage('loginPage')">Login here</a>
             </div>
         </div>
     </div>
+</div>
 
+<!-- =================== DASHBOARD =================== -->
+<div id="dashboardPage" class="page">
+    <header>
+        <div class="header-left">
+            <h1>⚡ Task Scheduler</h1>
+            <p>Priority Queue Based Task Management</p>
+        </div>
+        <div class="header-right">
+            <div class="user-badge">👤 <span id="headerUsername"></span></div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Progress -->
+        <div class="progress-section">
+            <div class="progress-label">
+                <span>Overall Progress</span>
+                <span id="progressText">0% Completed</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- Add Task -->
+        <div class="card">
+            <h2>➕ Add New Task</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>TASK NAME</label>
+                    <input type="text" id="taskName" placeholder="Enter task name..." onkeydown="if(event.key==='Enter') addTask()">
+                </div>
+                <div class="form-group">
+                    <label>PRIORITY</label>
+                    <select id="taskPriority">
+                        <option value="1">🔴 High</option>
+                        <option value="2">🟡 Medium</option>
+                        <option value="3">🟢 Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>DEADLINE</label>
+                    <input type="date" id="taskDeadline">
+                </div>
+                <button class="btn-add" onclick="addTask()">Add Task</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" id="totalCount" style="color:#a78bfa">0</div>
+                <div class="label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="highCount" style="color:#ef4444">0</div>
+                <div class="label">🔴 High Priority</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="medCount" style="color:#eab308">0</div>
+                <div class="label">🟡 Medium Priority</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="completedCount" style="color:#22c55e">0</div>
+                <div class="label">✅ Completed</div>
+            </div>
+        </div>
+
+        <!-- Next Task -->
+        <div class="next-task-banner" id="nextTaskBanner" style="display:none">
+            <span style="font-size:1.6rem">🎯</span>
+            <div>
+                <div class="nlabel">NEXT TASK TO DO</div>
+                <div class="ntask" id="nextTaskName"></div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="search-filter">
+            <input class="search-box" type="text" id="searchInput" placeholder="🔍 Search tasks..." oninput="renderFiltered()">
+            <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+            <button class="filter-btn" onclick="setFilter('1', this)">🔴 High</button>
+            <button class="filter-btn" onclick="setFilter('2', this)">🟡 Medium</button>
+            <button class="filter-btn" onclick="setFilter('3', this)">🟢 Low</button>
+            <button class="filter-btn" onclick="setFilter('done', this)">✅ Done</button>
+            <button class="filter-btn" onclick="setFilter('overdue', this)">⚠️ Overdue</button>
+        </div>
+
+        <!-- Task List -->
+        <div class="section-header">
+            <h2>📋 Tasks (Sorted by Priority)</h2>
+            <span class="task-count" id="taskCount"></span>
+        </div>
+        <div id="taskList"></div>
+    </div>
 </div>
 
 <script>
     const API = 'http://localhost:8080/api/tasks';
+    const AUTH = 'http://localhost:8080/api/auth';
+    let allTasks = [];
+    let currentFilter = 'all';
 
+    // ========== PAGE NAVIGATION ==========
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    // ========== AUTH ==========
+    async function register() {
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const errEl = document.getElementById('registerError');
+        const sucEl = document.getElementById('registerSuccess');
+        errEl.style.display = 'none';
+        sucEl.style.display = 'none';
+        if (!username || !email || !password) { errEl.textContent = 'Please fill all fields!'; errEl.style.display = 'block'; return; }
+        const res = await fetch(`${AUTH}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }), credentials: 'include' });
+        const data = await res.json();
+        if (data.success) {
+            sucEl.textContent = '✅ Registered successfully! Redirecting to login...';
+            sucEl.style.display = 'block';
+            setTimeout(() => showPage('loginPage'), 1500);
+        } else {
+            errEl.textContent = data.message;
+            errEl.style.display = 'block';
+        }
+    }
+
+    async function login() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const errEl = document.getElementById('loginError');
+        errEl.style.display = 'none';
+        if (!username || !password) { errEl.textContent = 'Please fill all fields!'; errEl.style.display = 'block'; return; }
+        const res = await fetch(`${AUTH}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }), credentials: 'include' });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('headerUsername').textContent = data.username;
+            showPage('dashboardPage');
+            loadTasks();
+            showToast('👋 Welcome back, ' + data.username + '!');
+        } else {
+            errEl.textContent = data.message;
+            errEl.style.display = 'block';
+        }
+    }
+
+    async function logout() {
+        await fetch(`${AUTH}/logout`, { method: 'POST', credentials: 'include' });
+        showPage('landingPage');
+        showToast('👋 Logged out successfully!');
+    }
+
+    // ========== TASKS ==========
     async function loadTasks() {
-        const res = await fetch(API);
-        const tasks = await res.json();
-        renderTasks(tasks);
-        updateStats(tasks);
+        const res = await fetch(API, { credentials: 'include' });
+        allTasks = await res.json();
+        if (!Array.isArray(allTasks)) allTasks = [];
+        renderFiltered();
+        updateStats(allTasks);
         loadNextTask();
+        updateProgress(allTasks);
     }
 
     async function addTask() {
         const name = document.getElementById('taskName').value.trim();
         const priority = document.getElementById('taskPriority').value;
         const deadline = document.getElementById('taskDeadline').value;
-
-        if (!name || !deadline) { alert('Please fill in task name and deadline!'); return; }
-
-        await fetch(API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, priority, deadline })
-        });
-
+        if (!name || !deadline) { showToast('⚠️ Please fill task name and deadline!'); return; }
+        await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, priority, deadline }), credentials: 'include' });
         document.getElementById('taskName').value = '';
         document.getElementById('taskDeadline').value = '';
+        showToast('✅ Task added!');
         loadTasks();
     }
 
     async function completeTask(id) {
-        await fetch(`${API}/${id}/complete`, { method: 'PUT' });
+        await fetch(`${API}/${id}/complete`, { method: 'PUT', credentials: 'include' });
+        showToast('🎉 Task completed!');
         loadTasks();
     }
 
     async function deleteTask(id) {
-        await fetch(`${API}/${id}`, { method: 'DELETE' });
+        await fetch(`${API}/${id}`, { method: 'DELETE', credentials: 'include' });
+        showToast('🗑️ Task deleted!');
+        loadTasks();
+    }
+
+    async function saveEdit(id) {
+        const name = document.getElementById(`edit-name-${id}`).value.trim();
+        const priority = document.getElementById(`edit-priority-${id}`).value;
+        const deadline = document.getElementById(`edit-deadline-${id}`).value;
+        if (!name || !deadline) { showToast('⚠️ Fill all fields!'); return; }
+        await fetch(`${API}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, priority, deadline }), credentials: 'include' });
+        showToast('✏️ Task updated!');
         loadTasks();
     }
 
     async function loadNextTask() {
-        const res = await fetch(`${API}/next`);
+        const res = await fetch(`${API}/next`, { credentials: 'include' });
         const task = await res.json();
         if (task && task.name) {
             document.getElementById('nextTaskBanner').style.display = 'flex';
-            document.getElementById('nextTaskName').textContent = task.name + ' — ' + getPriorityLabel(task.priority);
+            document.getElementById('nextTaskName').textContent = `${task.name} — ${getPriorityLabel(task.priority)} · Due: ${task.deadline}`;
         } else {
             document.getElementById('nextTaskBanner').style.display = 'none';
         }
     }
 
-    function getPriorityLabel(p) {
-        return p == 1 ? '🔴 High' : p == 2 ? '🟡 Medium' : '🟢 Low';
+    function setFilter(f, btn) {
+        currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderFiltered();
+    }
+
+    function renderFiltered() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const today = new Date().toISOString().split('T')[0];
+        let filtered = allTasks.filter(t => {
+            const matchSearch = t.name.toLowerCase().includes(search);
+            const matchFilter =
+                currentFilter === 'all' ? true :
+                currentFilter === 'done' ? t.completed :
+                currentFilter === 'overdue' ? (!t.completed && t.deadline < today) :
+                String(t.priority) === currentFilter;
+            return matchSearch && matchFilter;
+        });
+        renderTasks(filtered);
+        document.getElementById('taskCount').textContent = `${filtered.length} task${filtered.length !== 1 ? 's' : ''}`;
     }
 
     function renderTasks(tasks) {
         const list = document.getElementById('taskList');
-        if (tasks.length === 0) {
-            list.innerHTML = '<div class="empty-state"><p>No tasks yet. Add your first task above! 🚀</p></div>';
-            return;
-        }
-        list.innerHTML = tasks.map(task => `
-            <div class="task-card ${task.completed ? 'completed' : ''}">
+        const today = new Date().toISOString().split('T')[0];
+        if (tasks.length === 0) { list.innerHTML = '<div class="empty-state">No tasks found 🔍</div>'; return; }
+        list.innerHTML = tasks.map(task => {
+            const overdue = !task.completed && task.deadline < today;
+            return `
+            <div class="task-card ${task.completed ? 'completed' : ''} ${overdue ? 'overdue' : ''}">
                 <span class="priority-badge priority-${task.priority}">${getPriorityLabel(task.priority)}</span>
-                <div class="task-info">
-                    <div class="task-name ${task.completed ? 'completed-text' : ''}">${task.name}</div>
-                    <div class="task-deadline">📅 Deadline: ${task.deadline}</div>
+                <div class="task-info" id="view-${task.id}">
+                    <div class="task-name ${task.completed ? 'done' : ''}">${task.name}</div>
+                    <div class="task-meta">
+                        <span>📅 ${task.deadline}</span>
+                        ${overdue ? '<span class="overdue-tag">⚠️ OVERDUE</span>' : ''}
+                        ${task.completed ? '<span style="color:#22c55e">✅ Done</span>' : ''}
+                    </div>
                 </div>
-                <div class="task-actions">
-                    ${!task.completed ? `<button class="btn-complete" onclick="completeTask(${task.id})">✅ Done</button>` : '<span style="color:#22c55e">✅ Completed</span>'}
-                    <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️ Delete</button>
+                <div class="task-actions" id="actions-${task.id}">
+                    ${!task.completed ? `<button class="btn btn-done" onclick="completeTask(${task.id})">✅ Done</button>` : ''}
+                    ${!task.completed ? `<button class="btn btn-edit" onclick="showEdit(${task.id}, '${task.name}', ${task.priority}, '${task.deadline}')">✏️ Edit</button>` : ''}
+                    <button class="btn btn-del" onclick="deleteTask(${task.id})">🗑️</button>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
+    }
+
+    function showEdit(id, name, priority, deadline) {
+        document.getElementById(`view-${id}`).innerHTML = `
+            <div class="edit-inputs">
+                <input id="edit-name-${id}" value="${name}" placeholder="Task name">
+                <select id="edit-priority-${id}">
+                    <option value="1" ${priority==1?'selected':''}>🔴 High</option>
+                    <option value="2" ${priority==2?'selected':''}>🟡 Medium</option>
+                    <option value="3" ${priority==3?'selected':''}>🟢 Low</option>
+                </select>
+                <input type="date" id="edit-deadline-${id}" value="${deadline}">
+            </div>`;
+        document.getElementById(`actions-${id}`).innerHTML = `
+            <button class="btn btn-save" onclick="saveEdit(${id})">💾 Save</button>
+            <button class="btn btn-del" onclick="loadTasks()">✕</button>`;
     }
 
     function updateStats(tasks) {
@@ -221,8 +541,33 @@
         document.getElementById('completedCount').textContent = tasks.filter(t => t.completed).length;
     }
 
-    loadTasks();
-</script>
+    function updateProgress(tasks) {
+        const total = tasks.length;
+        const done = tasks.filter(t => t.completed).length;
+        const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressText').textContent = `${pct}% Completed (${done}/${total})`;
+    }
 
+    function getPriorityLabel(p) { return p == 1 ? '🔴 High' : p == 2 ? '🟡 Medium' : '🟢 Low'; }
+
+    function showToast(msg) {
+        const t = document.createElement('div');
+        t.className = 'toast'; t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    // Check session on load
+    (async () => {
+        const res = await fetch(`${AUTH}/session`, { credentials: 'include' });
+        const data = await res.json();
+        if (data.loggedIn) {
+            document.getElementById('headerUsername').textContent = data.username;
+            showPage('dashboardPage');
+            loadTasks();
+        }
+    })();
+</script>
 </body>
 </html>
