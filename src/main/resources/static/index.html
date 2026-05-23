@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Scheduler - Priority Queue</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0c29; color: white; min-height: 100vh; }
+        
+        header { background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        header h1 { font-size: 1.8rem; letter-spacing: 1px; }
+        header p { font-size: 0.9rem; opacity: 0.8; }
+
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+
+        .add-task-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1); }
+        .add-task-card h2 { margin-bottom: 20px; color: #a78bfa; }
+
+        .form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #a78bfa; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: white; font-size: 0.95rem; outline: none; transition: border 0.3s; }
+        .form-group input:focus, .form-group select:focus { border-color: #667eea; }
+        .form-group select option { background: #1a1a2e; }
+
+        .btn-add { padding: 12px 28px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; font-size: 1rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-card .number { font-size: 2rem; font-weight: bold; color: #a78bfa; }
+        .stat-card .label { font-size: 0.8rem; opacity: 0.7; margin-top: 5px; }
+
+        .tasks-section h2 { margin-bottom: 20px; color: #a78bfa; }
+        .task-card { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; transition: transform 0.2s; }
+        .task-card:hover { transform: translateX(5px); }
+        .task-card.completed { opacity: 0.5; }
+
+        .priority-badge { padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-right: 15px; }
+        .priority-1 { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
+        .priority-2 { background: rgba(234,179,8,0.2); color: #eab308; border: 1px solid #eab308; }
+        .priority-3 { background: rgba(34,197,94,0.2); color: #22c55e; border: 1px solid #22c55e; }
+
+        .task-info { flex: 1; }
+        .task-name { font-size: 1.05rem; font-weight: 600; }
+        .task-name.completed-text { text-decoration: line-through; }
+        .task-deadline { font-size: 0.8rem; opacity: 0.6; margin-top: 4px; }
+
+        .task-actions { display: flex; gap: 10px; }
+        .btn-complete { padding: 8px 16px; background: rgba(34,197,94,0.15); border: 1px solid #22c55e; border-radius: 8px; color: #22c55e; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
+        .btn-complete:hover { background: rgba(34,197,94,0.3); }
+        .btn-delete { padding: 8px 16px; background: rgba(239,68,68,0.15); border: 1px solid #ef4444; border-radius: 8px; color: #ef4444; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
+        .btn-delete:hover { background: rgba(239,68,68,0.3); }
+
+        .empty-state { text-align: center; padding: 60px; opacity: 0.5; }
+        .empty-state p { font-size: 1.1rem; }
+
+        .next-task-banner { background: linear-gradient(135deg, #667eea33, #764ba233); border: 1px solid #667eea; border-radius: 12px; padding: 15px 25px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+        .next-task-banner .label { font-size: 0.8rem; color: #a78bfa; }
+        .next-task-banner .task-name { font-weight: bold; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>⚡ Task Scheduler</h1>
+        <p>Priority Queue Based Task Management System</p>
+    </div>
+    <div style="text-align:right; font-size:0.8rem; opacity:0.7;">
+        DSA Minor Project<br>Priority Queue | Spring Boot
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Add Task Form -->
+    <div class="add-task-card">
+        <h2>➕ Add New Task</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Task Name</label>
+                <input type="text" id="taskName" placeholder="Enter task name...">
+            </div>
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="taskPriority">
+                    <option value="1">🔴 High</option>
+                    <option value="2">🟡 Medium</option>
+                    <option value="3">🟢 Low</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Deadline</label>
+                <input type="date" id="taskDeadline">
+            </div>
+            <button class="btn-add" onclick="addTask()">Add Task</button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="number" id="totalCount">0</div>
+            <div class="label">Total Tasks</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" style="color:#ef4444" id="highCount">0</div>
+            <div class="label">🔴 High Priority</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" style="color:#eab308" id="medCount">0</div>
+            <div class="label">🟡 Medium Priority</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" style="color:#22c55e" id="completedCount">0</div>
+            <div class="label">✅ Completed</div>
+        </div>
+    </div>
+
+    <!-- Next Task Banner -->
+    <div class="next-task-banner" id="nextTaskBanner" style="display:none">
+        <span style="font-size:1.5rem">🎯</span>
+        <div>
+            <div class="label">NEXT TASK TO DO</div>
+            <div class="task-name" id="nextTaskName"></div>
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div class="tasks-section">
+        <h2>📋 Tasks (Sorted by Priority)</h2>
+        <div id="taskList">
+            <div class="empty-state">
+                <p>No tasks yet. Add your first task above! 🚀</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API = 'http://localhost:8080/api/tasks';
+
+    async function loadTasks() {
+        const res = await fetch(API);
+        const tasks = await res.json();
+        renderTasks(tasks);
+        updateStats(tasks);
+        loadNextTask();
+    }
+
+    async function addTask() {
+        const name = document.getElementById('taskName').value.trim();
+        const priority = document.getElementById('taskPriority').value;
+        const deadline = document.getElementById('taskDeadline').value;
+
+        if (!name || !deadline) { alert('Please fill in task name and deadline!'); return; }
+
+        await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, priority, deadline })
+        });
+
+        document.getElementById('taskName').value = '';
+        document.getElementById('taskDeadline').value = '';
+        loadTasks();
+    }
+
+    async function completeTask(id) {
+        await fetch(`${API}/${id}/complete`, { method: 'PUT' });
+        loadTasks();
+    }
+
+    async function deleteTask(id) {
+        await fetch(`${API}/${id}`, { method: 'DELETE' });
+        loadTasks();
+    }
+
+    async function loadNextTask() {
+        const res = await fetch(`${API}/next`);
+        const task = await res.json();
+        if (task && task.name) {
+            document.getElementById('nextTaskBanner').style.display = 'flex';
+            document.getElementById('nextTaskName').textContent = task.name + ' — ' + getPriorityLabel(task.priority);
+        } else {
+            document.getElementById('nextTaskBanner').style.display = 'none';
+        }
+    }
+
+    function getPriorityLabel(p) {
+        return p == 1 ? '🔴 High' : p == 2 ? '🟡 Medium' : '🟢 Low';
+    }
+
+    function renderTasks(tasks) {
+        const list = document.getElementById('taskList');
+        if (tasks.length === 0) {
+            list.innerHTML = '<div class="empty-state"><p>No tasks yet. Add your first task above! 🚀</p></div>';
+            return;
+        }
+        list.innerHTML = tasks.map(task => `
+            <div class="task-card ${task.completed ? 'completed' : ''}">
+                <span class="priority-badge priority-${task.priority}">${getPriorityLabel(task.priority)}</span>
+                <div class="task-info">
+                    <div class="task-name ${task.completed ? 'completed-text' : ''}">${task.name}</div>
+                    <div class="task-deadline">📅 Deadline: ${task.deadline}</div>
+                </div>
+                <div class="task-actions">
+                    ${!task.completed ? `<button class="btn-complete" onclick="completeTask(${task.id})">✅ Done</button>` : '<span style="color:#22c55e">✅ Completed</span>'}
+                    <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️ Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateStats(tasks) {
+        document.getElementById('totalCount').textContent = tasks.length;
+        document.getElementById('highCount').textContent = tasks.filter(t => t.priority == 1).length;
+        document.getElementById('medCount').textContent = tasks.filter(t => t.priority == 2).length;
+        document.getElementById('completedCount').textContent = tasks.filter(t => t.completed).length;
+    }
+
+    loadTasks();
+</script>
+
+</body>
+</html>
