@@ -18,3 +18,4 @@ Thumbs.db
 
 # Database credentials 
 src/main/resources/application.properties
+src/main/resources/application.properties
