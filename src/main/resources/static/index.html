@@ -224,11 +224,11 @@
             <div class="error-msg" id="loginError"></div>
             <div class="form-group">
                 <label>USERNAME</label>
-                <input type="text" id="loginUsername" placeholder="Enter username">
+                <input type="text" id="loginUsername" name="username" autocomplete="username" placeholder="Enter username">
             </div>
             <div class="form-group">
                 <label>PASSWORD</label>
-                <input type="password" id="loginPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
+                <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="Enter password" onkeydown="if(event.key==='Enter') login()">
             </div>
             <button class="auth-btn" onclick="login()">Login →</button>
             <div class="auth-switch">Don't have an account? <a onclick="showPage('registerPage')">Register here</a></div>
@@ -247,15 +247,15 @@
             <div class="success-msg" id="registerSuccess"></div>
             <div class="form-group">
                 <label>USERNAME</label>
-                <input type="text" id="regUsername" placeholder="Choose a username">
+                <input type="text" id="regUsername" name="username" autocomplete="username" placeholder="Choose a username">
             </div>
             <div class="form-group">
                 <label>EMAIL</label>
-                <input type="email" id="regEmail" placeholder="Enter your email">
+                <input type="email" id="regEmail" name="email" autocomplete="email" placeholder="Enter your email">
             </div>
             <div class="form-group">
                 <label>PASSWORD</label>
-                <input type="password" id="regPassword" placeholder="Create a password" onkeydown="if(event.key==='Enter') register()">
+                <input type="password" id="regPassword" name="password" autocomplete="new-password" placeholder="Create a password" onkeydown="if(event.key==='Enter') register()">
             </div>
             <button class="auth-btn" onclick="register()">Create Account →</button>
             <div class="auth-switch">Already have an account? <a onclick="showPage('loginPage')">Login here</a></div>
