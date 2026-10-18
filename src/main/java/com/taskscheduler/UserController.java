@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -13,6 +14,8 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // REGISTER
     @PostMapping("/register")
@@ -34,7 +37,7 @@ public class UserController {
             return response;
         }
 
-        User user = new User(username, email, password);
+        User user = new User(username, email, encoder.encode(password));
         userRepository.save(user);
         response.put("success", true);
         response.put("message", "Registration successful!");
@@ -58,7 +61,7 @@ public class UserController {
         }
 
         User user = userOpt.get();
-        if (user.getPassword().equals(password)) {
+        if (encoder.matches(password, user.getPassword())) {
             session.setAttribute("userId", user.getId());
             session.setAttribute("username", user.getUsername());
             response.put("success", true);
