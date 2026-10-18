@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Comparator;
+import java.util.Objects;
 
 @Service
 public class PriorityQueueScheduler {
@@ -84,6 +85,38 @@ public class PriorityQueueScheduler {
     // Update a task
     public boolean updateTask(int id, String name, int priority, String deadline, int estimatedMinutes) {
         return taskRepository.findById(id).map(task -> {
+            task.setName(name);
+            task.setPriority(priority);
+            task.setDeadline(deadline);
+            task.setEstimatedMinutes(estimatedMinutes);
+            taskRepository.save(task);
+            return true;
+        }).orElse(false);
+    }
+
+    // ---- Owner-checked versions: a user can only change their own tasks ----
+    private boolean owns(Task task, User user) {
+        return task.getUser() != null && user != null
+            && Objects.equals(task.getUser().getId(), user.getId());
+    }
+
+    public boolean completeTask(int id, User user) {
+        return taskRepository.findById(id).filter(t -> owns(t, user)).map(task -> {
+            task.setCompleted(true);
+            taskRepository.save(task);
+            return true;
+        }).orElse(false);
+    }
+
+    public boolean deleteTask(int id, User user) {
+        return taskRepository.findById(id).filter(t -> owns(t, user)).map(task -> {
+            taskRepository.delete(task);
+            return true;
+        }).orElse(false);
+    }
+
+    public boolean updateTask(int id, String name, int priority, String deadline, int estimatedMinutes, User user) {
+        return taskRepository.findById(id).filter(t -> owns(t, user)).map(task -> {
             task.setName(name);
             task.setPriority(priority);
             task.setDeadline(deadline);

@@ -9,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+
 public class UserController {
 
     @Autowired

@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+
 public class TaskController {
 
     @Autowired
@@ -51,7 +51,7 @@ public class TaskController {
         User user = getLoggedInUser(session);
         Map<String, Object> response = new HashMap<>();
         if (user == null) { response.put("success", false); return response; }
-        response.put("success", scheduler.completeTask(id));
+        response.put("success", scheduler.completeTask(id, user));
         return response;
     }
 
@@ -68,7 +68,7 @@ public class TaskController {
         String deadline = body.get("deadline");
         int estimatedMinutes = body.get("estimatedMinutes") != null ?
             Integer.parseInt(body.get("estimatedMinutes")) : 0;
-        response.put("success", scheduler.updateTask(id, name, priority, deadline, estimatedMinutes));
+        response.put("success", scheduler.updateTask(id, name, priority, deadline, estimatedMinutes, user));
         return response;
     }
 
@@ -78,7 +78,7 @@ public class TaskController {
         User user = getLoggedInUser(session);
         Map<String, Object> response = new HashMap<>();
         if (user == null) { response.put("success", false); return response; }
-        response.put("success", scheduler.deleteTask(id));
+        response.put("success", scheduler.deleteTask(id, user));
         return response;
     }
 
