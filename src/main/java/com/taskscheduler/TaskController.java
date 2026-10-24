@@ -40,6 +40,7 @@ public class TaskController {
         String name = body.get("name");
         int priority = Integer.parseInt(body.get("priority"));
         String deadline = body.get("deadline");
+        if (!isValidDate(deadline)) return badDeadline();
         int estimatedMinutes = body.get("estimatedMinutes") != null ?
             Integer.parseInt(body.get("estimatedMinutes")) : 0;
         return scheduler.addTask(name, priority, deadline, estimatedMinutes, user);
@@ -66,6 +67,7 @@ public class TaskController {
         String name = body.get("name");
         int priority = Integer.parseInt(body.get("priority"));
         String deadline = body.get("deadline");
+        if (!isValidDate(deadline)) return badDeadline();
         int estimatedMinutes = body.get("estimatedMinutes") != null ?
             Integer.parseInt(body.get("estimatedMinutes")) : 0;
         response.put("success", scheduler.updateTask(id, name, priority, deadline, estimatedMinutes, user));
@@ -96,6 +98,18 @@ public class TaskController {
         User user = getLoggedInUser(session);
         if (user == null) return unauthorized();
         return scheduler.getTasksForAvailableTime(user, minutes);
+    }
+
+    private boolean isValidDate(String d) {
+        if (d == null) return false;
+        try { java.time.LocalDate.parse(d); return true; } catch (Exception e) { return false; }
+    }
+
+    private Map<String, Object> badDeadline() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", "Please give a valid deadline (yyyy-MM-dd).");
+        return response;
     }
 
     private Map<String, Object> unauthorized() {

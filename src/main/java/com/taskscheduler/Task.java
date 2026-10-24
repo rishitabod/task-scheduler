@@ -1,6 +1,7 @@
 package com.taskscheduler;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tasks")
@@ -16,6 +17,7 @@ public class Task {
     private boolean completed;
     private int estimatedMinutes;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
