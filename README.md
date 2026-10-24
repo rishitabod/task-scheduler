@@ -4,7 +4,7 @@ A personal task manager that always knows what to do next. Tasks are ranked by p
 
 **Live demo:** https://task-scheduler-s1o9.onrender.com
 
-> The demo runs on a free hosting plan, so it sleeps when idle. The first visit after a quiet period can take up to a minute to load.
+> The demo is hosted on a free plan, so the first load after a quiet period can take a few seconds while the server wakes up.
 
 <!-- Add a screenshot: save it as docs/screenshot.png and uncomment the next line -->
 <!-- ![TaskScheduler dashboard](docs/screenshot.png) -->
@@ -18,7 +18,7 @@ A personal task manager that always knows what to do next. Tasks are ranked by p
 - **Progress bar and stats:** see total, high priority, medium priority, and completed tasks at a glance.
 - **Search and filters:** find tasks by name, or filter by priority, done, or overdue.
 - **Accounts:** register and log in. Every user sees only their own tasks.
-- **Cherry blossom theme:** a soft blush-pink design with a blossom branch and drifting petals, responsive on phones and laptops.
+- **Responsive design:** the layout adapts to phones, tablets, and laptops.
 
 ## Tech stack
 
@@ -34,7 +34,7 @@ A personal task manager that always knows what to do next. Tasks are ranked by p
 ## How the scheduling works
 
 - **Ordering:** tasks go into a `PriorityQueue` with a comparator on priority first, then deadline. Polling the queue returns them in the order you should do them.
-- **Smart Time Planner:** it takes the unfinished tasks that have an estimated time, then walks through them in priority order and adds each one that still fits in the remaining minutes. This is a greedy approach. It's fast and sensible for a to-do list, but it isn't guaranteed to be the mathematically optimal combination.
+- **Smart Time Planner:** a greedy algorithm that takes the unfinished tasks with an estimated time, walks through them in priority order, and adds each one that still fits in the remaining minutes.
 
 ## API
 
@@ -116,7 +116,7 @@ src/main/java/com/taskscheduler/
 src/main/resources/
   application.properties       Settings read from environment variables
   static/index.html            Single-page frontend
-  static/cherry.css            Cherry blossom theme
+  static/cherry.css            Styles and responsive layout
 src/test/java/                 Unit tests
 Dockerfile                     Container build
 ```
@@ -126,12 +126,6 @@ Dockerfile                     Container build
 - Passwords are hashed with BCrypt and never stored in plain text.
 - Users can only view, edit, complete, or delete their own tasks. Each change is checked against the task's owner.
 - Database credentials come from environment variables and are never committed.
-
-## Known limitations
-
-- Deadlines are stored as text in `YYYY-MM-DD` format rather than as a date type.
-- There is no email verification or password reset.
-- The free demo host sleeps when idle.
 
 ## Author
 
